@@ -1,5 +1,6 @@
-package intIter
+package intTools
 
+import "strconv"
 
 type IntIter struct {
 	value   []int
@@ -33,4 +34,15 @@ func (this *IntIter) Peek() int {
 
 func (this *IntIter) Current() int {
 	return this.value[this.current]
+}
+
+func StringToIntArray(input string) []int {
+	chars := []rune(input)
+	var ret []int
+
+	for _, i := range chars {
+		j, _ := strconv.Atoi(string(i))
+		ret = append(ret, j)
+	}
+	return ret
 }

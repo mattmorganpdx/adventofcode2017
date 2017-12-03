@@ -4,44 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
-	"./intIter"
+	"./intTools"
 )
 
-type Captcha struct {
-	value   []int
-	length  int
-	current int
-}
-
-func NewCaptcha(input []int) Captcha {
-	return Captcha{input, len(input), 0}
-
-}
-
-func (this *Captcha) Next() int {
-	if this.current+1 >= this.length {
-		this.current = 1
-	} else {
-		this.current++
-	}
-	return this.value[this.current-1]
-}
-
-func (this *Captcha) Peek() int {
-	var next int
-	if this.current+1 >= this.length {
-		next = 0
-	} else {
-		next = this.current + 1
-	}
-	return this.value[next]
-}
-
-func (this *Captcha) Current() int {
-	return this.value[this.current]
-}
-
+// Try and read all lines from puzzleInput.txt and don't care about any errors
 func readFile() []string {
 	file, _ := os.Open("puzzleInput.txt")
 
@@ -56,21 +22,11 @@ func readFile() []string {
 	return lines
 }
 
-func stringToIntArray(input string) []int {
-	chars := []rune(input)
-	var ret []int
-
-	for _, i := range chars {
-		j, _ := strconv.Atoi(string(i))
-		ret = append(ret, j)
-	}
-	return ret
-}
-
+// Do the "captcha" work
 func captcha(input []int) int {
 	output := 0
 
-	capObj := intIter.NewIntIter(input)
+	capObj := intTools.NewIntIter(input)
 
 	for i := 0; i < len(input); i++ {
 		if capObj.Current() == capObj.Peek() {
@@ -85,7 +41,8 @@ func captcha(input []int) int {
 
 func main() {
 	input := readFile()
-	theNumbers := stringToIntArray(input[0])
+	//convert the first line of puzzleInput into an []int
+	theNumbers := intTools.StringToIntArray(input[0])
 	ret := captcha(theNumbers)
 	fmt.Println(ret)
 
