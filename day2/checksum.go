@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"strconv"
+	"sort"
 )
 
 type Table [][]int
@@ -33,6 +34,7 @@ func textToTable(text []string) Table {
 			intElem, _ := strconv.Atoi(elem)
 			row = append(row, intElem)
 		}
+		sort.Ints(row)
 		ret = append(ret, row)
 	}
 
@@ -42,6 +44,15 @@ func textToTable(text []string) Table {
 func main () {
 	lines := readFile()
 
+	//textToTable returns sorted rows to make the subtraction easier
 	checkTable := textToTable(lines)
+
+	sum := 0
+
+	for i := 0 ; i < len(checkTable); i++ {
+		sum += checkTable[i][len(checkTable[i]) - 1] - checkTable[i][0]
+	}
+
+	fmt.Println(sum)
 	
 }
