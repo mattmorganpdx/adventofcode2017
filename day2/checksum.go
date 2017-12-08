@@ -41,18 +41,58 @@ func textToTable(text []string) Table {
 	return ret
 }
 
+func summer(checkTable Table) int {
+	sum := 0
+	
+		for i := 0 ; i < len(checkTable); i++ {
+			sum += checkTable[i][len(checkTable[i]) - 1] - checkTable[i][0]
+		}
+	return sum
+}
+
+func div(arr []int) int {
+	i := arr
+	for idx, j := range i {
+		max := len(i)
+		for e := 0 ; e < max ; e++ {
+			if e != idx {
+				right := j % i[e]
+				left := i[e] % j
+				if right == 0 {
+					return j / i[e]
+				} else if left == 0 {
+					return i[e] / j
+				}
+			}
+		}
+	}
+	return 0
+}
+
+func diver(checkTable Table) int {
+	sum := 0
+		
+		
+		for i := 0 ; i < len(checkTable); i++ {
+			sum += div(checkTable[i])
+		}
+	return sum
+}
+
 func main () {
 	lines := readFile()
 
 	//textToTable returns sorted rows to make the subtraction easier
 	checkTable := textToTable(lines)
 
-	sum := 0
+	sum := summer(checkTable)
 
-	for i := 0 ; i < len(checkTable); i++ {
-		sum += checkTable[i][len(checkTable[i]) - 1] - checkTable[i][0]
-	}
-
+	//41887
 	fmt.Println(sum)
+
+	div := diver(checkTable)
+
+	//226
+	fmt.Println(div)
 	
 }
