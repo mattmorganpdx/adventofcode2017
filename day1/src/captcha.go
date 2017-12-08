@@ -39,11 +39,31 @@ func captcha(input []int) int {
 	return output
 }
 
+// Do the "captcha" work
+func captcha2(input []int) int {
+	output := 0
+
+	capObj := intTools.NewIntIter(input)
+
+	for i := 0; i < len(input); i++ {
+		// fmt.Println(capObj.Current(),capObj.Glance())
+		if capObj.Current() == capObj.Glance() {
+			output = output + capObj.Next()
+		} else {
+			capObj.Next()
+		}
+	}
+
+	return output
+}
+
 func main() {
 	input := readFile()
 	//convert the first line of puzzleInput into an []int
 	theNumbers := intTools.StringToIntArray(input[0])
 	ret := captcha(theNumbers)
+	ret2 := captcha2(theNumbers)
 	fmt.Println(ret)
+	fmt.Println(ret2)
 
 }

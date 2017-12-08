@@ -32,6 +32,18 @@ func (this *IntIter) Peek() int {
 	return this.value[next]
 }
 
+// Glance Look halfway around the loop
+func (this *IntIter) Glance() int {
+	var glance int
+	halfway := this.length / 2
+	if this.current + halfway >= this.length {
+		glance = this.current + halfway - this.length
+	} else {
+		glance = this.current + halfway
+	}
+	return this.value[glance]
+}
+
 func (this *IntIter) Current() int {
 	return this.value[this.current]
 }
