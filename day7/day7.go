@@ -24,38 +24,84 @@ func readFile() []string {
 	return lines
 }
 
+// Parent struct to hold data on base nodes
+type Parent struct {
+	node string
+	childern []string
+	childWeights int
+}
+
 func getBase() string {
 	lines := readFile()
+	// map of weights
 	towerMap := getWeightMap(lines)
+	// Do you have a parent 
 	kidsMap := make(map[string]bool)
+	// the total weight of all the childern
 	kidWeightMap := make(map[string]int)
-	var bases []string
+	
+	// the slice of parents
+	bases := make(map[string]Parent)
 	for _, line := range lines {
 		if strings.Contains(line, "->") {
-			var weight int
+			// var weight int
 			subs := strings.Split(line, "->")
 			trimBase := strings.TrimSpace(strings.Split(subs[0], " ")[0])
-			bases = append(bases, trimBase)
-			weight +=towerMap[trimBase]
+			//weight +=towerMap[trimBase]
+			parent := Parent{
+				trimBase,
+				[]string{},
+				0,
+			}
 			for _, kid := range strings.Split(subs[1], ",") {
 				trimKid := strings.TrimSpace(kid)
-				weight += towerMap[trimKid]
+				parent.childern = append(parent.childern, trimKid)
+				parent.childWeights += towerMap[trimKid]
 				kidsMap[trimKid] = true
 			}
-			fmt.Println(trimBase, weight)
-			kidWeightMap[trimBase] = weight
+			kidWeightMap[trimBase] = parent.childWeights
+			bases[parent.node] = parent
 		}
 	}
+
+
+	
+
+	// The Bottom is the one parent that hasn't been seen as a child
 	var theBottom string	
 	for _, base := range bases {
-		if !kidsMap[base] {
-			theBottom = base
-		} 
-		if kidWeightMap[base] > 0 {
-			fmt.Println(base, kidWeightMap[theBottom])
+		if !kidsMap[base.node] {
+			theBottom = base.node
 		}
-	}	
+		var tw []int
+		for _, k := range base.childern {
+			tw = append(tw, totalWeight(k, bases, towerMap))
+		}
+		for _, i := range tw {
+			if tw[0] != i {
+				fmt.Println("uneveness detected: ", base)
+				fmt.Println(base.childern, tw)
+				for _, j := range base.childern {
+					fmt.Println(j, towerMap[j])
+				}
+			}
+		}
+
+	}					 
+	// PART solution node cwwwj needs to be 201 - 8 = 193
+	fmt.Println(theBottom)
 	return theBottom
+}
+
+func totalWeight(node string, bases map[string]Parent, towerMap map[string]int) int {
+	var ret int
+	if b, ok := bases[node] ; ok {
+		for _, kid := range b.childern {
+			ret += totalWeight(kid, bases, towerMap)
+		}
+	}
+	ret += towerMap[node]
+	return ret
 }
 
 func getWeightMap(tower []string) map[string]int {
