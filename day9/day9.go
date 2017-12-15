@@ -14,14 +14,20 @@ func day9(input string) int {
 }
 
 func findGroups(input string, count, score int) int {
-	count += count + 1
-	subs := strings.Split(input[1:len(input)-1], ",")
+	count++
+	var subs []string
+	if len(input) > 2 {
+		subs = strings.Split(input[1:len(input)-1], ",")
+	} else {
+		return score
+	}
 	// fmt.Println(subs)
-	r := regexp.MustCompile(`[{]*(?:|<[^!]*>|<[^>]*[^!]>|[^<>]*)[}]*`)
+	r := regexp.MustCompile(`[{]+(?:<[^!]*>|<[^>]*[^!]>|[^<>]*)?[}]+`)
 	for _, sub := range subs {
 		for _, m := range r.FindAllString(sub, -1) {
-			fmt.Println(sub, count)			
-			score += findGroups(m, count , score + 1)
+			fmt.Println(sub, count)
+			score += count			
+			findGroups(m, count , score)
 		}
 	}
 	return score 
