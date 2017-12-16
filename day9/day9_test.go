@@ -28,23 +28,24 @@ func Test_day9(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int
+		want1 int
+		want2 int
 	}{
 		{
 			"test1",
 			args{"{{<a!>},{<a!>},{<a!>},{<ab>}}"},
-			3,
+			3, 17,
 		},
 		{
 			"test2",
 			args{readFile("puzzleInput.txt")[0]},
-			3,
+			17390, 7825, 
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := day9(tt.args.input); got != tt.want {
-				t.Errorf("day9() = %v, want %v", got, tt.want)
+			if got1, got2 := day9(tt.args.input); got1 != tt.want1 || got2 != tt.want2 {
+				t.Errorf("day9() = %v, want1 %v and %v, want2 %v", got1, tt.want1, got2, tt.want2)
 			}
 		})
 	}

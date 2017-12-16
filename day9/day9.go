@@ -1,82 +1,50 @@
 package day9
 
 import (
-	"fmt"
 	"strings"
-	"regexp"
 )
 
-func day9(input string) int {
-	// count := findStart(strings.Split(input, "") , 0, 0)
-
-	return findGroups(input, 1, 1)
-
-}
-
-func findGroups(input string, count, score int) int {
-	count++
-	var subs []string
-	if len(input) > 2 {
-		subs = strings.Split(input[1:len(input)-1], ",")
-	} else {
-		return score
-	}
-	// fmt.Println(subs)
-	r := regexp.MustCompile(`[{]+(?:<[^!]*>|<[^>]*[^!]>|[^<>]*)?[}]+`)
-	for _, sub := range subs {
-		for _, m := range r.FindAllString(sub, -1) {
-			fmt.Println(sub, count)
-			score += count			
-			findGroups(m, count , score)
-		}
-	}
-	return score 
-}
-
-func findStart(input []string, index, count int) int {
-	if index >= len(input) {
-		return count
-	}
-	for index < len(input) {
-		if input[index] == "{" {
-			return findEnd(input, index + 1, count, false)
-		}
-		index++
-	}
-	
-	return count
-}
-
-func findEnd(input []string, index, count int, garbage bool) int {
-	if index >= len(input) {
-		return count
-	}
-	if input[index] == "}" {
-		if garbage {
-			return count
-		} 
-		
-		return count + 1	
-	}
-	for index < len(input) {
-		switch input[index] {
+func day9(input string) (int, int) {
+	depth := 0
+	score := 0
+	inGarbage := false
+	garbageCount := 0
+	chars := strings.Split(input, "")
+	/* Process the input one char at a time.
+	   Inc and dec depth as groups are are found and closed.
+	   Skip over any char after "!" by increasing the index an extra time.
+	   Add up all the chars found inside garbage along the way.
+	*/
+	for i := 0 ; i < len(chars) ; i++ {
+		switch chars[i] {
+		case "{":
+			if !inGarbage {
+				depth++
+			} else {
+				garbageCount++
+			}
+		case "}":
+			if !inGarbage {
+				score += depth
+				depth--
+			} else {
+				garbageCount++
+			}
 		case "<":
-			if input[index -1] != "!" && !garbage{
-				//Start garbage
-				garbage = true
-				return findEnd(input, index + 1, count , garbage)
+			if inGarbage {
+				garbageCount++
+			} else {
+				inGarbage = true
 			}
 		case ">":
-			if input[index -1] != "!" && garbage {
-				garbage = false
-				return findEnd(input, index + 1, count , garbage)
-			}		
-		case "{":
-			// Reset garbage
-			return findEnd(input, index + 1, count , false)		
+			inGarbage = false
+		case "!":
+			i++
+		default:
+			if inGarbage {
+				garbageCount++
+			}
 		}
-		index++
 	}
-
-	return count
+	return score, garbageCount
 }
