@@ -1,9 +1,8 @@
 package day10
 
 import (
-	
+	"bytes"
 	"fmt"
-
 )
 
 func createArray(size int) []int {
@@ -14,25 +13,49 @@ func createArray(size int) []int {
 	return ret
 }
 
-func day10(size int, input ...int) int {	
-	//fmt.Println(input)
+func day10(size int, input1 string) string {
+	suffix := []int{17, 31, 73, 47, 23}
+	var input []int
+	for _, r := range []rune(input1){
+		input = append(input, int(r)	)
+	}
+	input = append(input, suffix...)
 
 	position := 0
 	skip     := 0
 	intRange := createArray(size)
 
+	for i := 0 ; i < 64 ; i++ {
+		intRange, position, skip = knot(input, intRange, position, skip)		
+	}
+
+	var denseHash []int
+	for i := 0 ; i < 256 ; i += 16 {
+		bytexor := intRange[i]
+		for j := 1; j < 16 ; j++ {
+			bytexor = bytexor ^ intRange[i+j]
+		}
+		denseHash = append(denseHash, bytexor)
+	}
+
+	var denseHex bytes.Buffer
+	for _, i := range denseHash {
+		denseHex.WriteString(fmt.Sprintf("%02x",i))
+	}
+
+	return denseHex.String()
+}
+
+func knot(input, intRange []int, position, skip int) ([]int, int, int) {
 	for i := 0 ; i < len(input) ; i++ {
 		length     := input[i]
 		rangeStart := position
 		rangeEnd   := rangeStart + length - 1
-		//fmt.Println("start:",rangeStart," end:",rangeEnd)
 		if rangeEnd < len(intRange) {
 			intRange = switcher(rangeStart, rangeEnd, intRange)
 
 		} else {
-			// [0 1 2 3 4]  3 + 4 = 6, (6 - 1 ) - 5
 			front := rangeEnd - len(intRange)
-			//fmt.Println("front:",front)
 			sub := []int{}
 			for sr := rangeStart ; sr < len(intRange) ; sr++ {
 				sub = append(sub, intRange[sr])
@@ -49,20 +72,17 @@ func day10(size int, input ...int) int {
 			}
 		}
 		position += length + skip
-		if len(intRange) < position{
+		for position > len(intRange) {
 			position -= len(intRange)
 		}
 		skip++
 	}
-	fmt.Println(intRange)
-	return intRange[0] * intRange[1]
+	return intRange, position, skip
 }
 
 func switcher(start, end int, intRange []int) []int{
-	//fmt.Println("switcher", start, end, intRange)
 	for f, b  := start, end; f < b ; f, b = f+1, b-1 {
 		intRange[f], intRange[b] = intRange[b], intRange[f]
 	}
-	//fmt.Println("switcher", intRange)
 	return intRange
 }
