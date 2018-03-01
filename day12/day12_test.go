@@ -19,21 +19,22 @@ func Test_day12(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int
+		want1 int
+		want2 int
 	}{
 		{	"test1",
 			args{0, inputToMap(testInput)},
-			6,
+			6, 2,
 		},
 		{	"test2",
 			args{0, inputToMap(readFile("puzzleInput.txt"))},
-			175,
+			175, 213,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := day12(tt.args.id, tt.args.inputMap); got != tt.want {
-				t.Errorf("day12() = %v, want %v", got, tt.want)
+			if got1, got2 := day12(tt.args.id, tt.args.inputMap); got1 != tt.want1 || got2 != tt.want2 {
+				t.Errorf("day12() = %v, want %v ; %v, want %v", got1, tt.want1, got2, tt.want2)
 			}
 		})
 	}

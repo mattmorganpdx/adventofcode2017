@@ -51,8 +51,27 @@ func getConnections(id int, inputMap map[int][]int, returnMap map[int]bool) map[
 	return returnMap
 }
 
-func day12(id int, inputMap map[int][]int) int {
+func isIntInAlreadyInGroup(id int, inputMap []map[int]bool) bool {
+	for _, e := range inputMap {
+		if e[id] {
+			return true
+		}
+	}
+	return false
+}
+
+func getAllGroups(inputMap map[int][]int) []map[int]bool {
+	r := make([]map[int]bool, 0, 0)
+	for i := range inputMap {
+		if !isIntInAlreadyInGroup(i, r) {
+			r = append(r, getConnections(i, inputMap, make(map[int]bool)))
+		}
+
+	}
+	return r
+}
+
+func day12(id int, inputMap map[int][]int) (int, int) {
 	_ = fmt.Sprintf("format string")
-	r := getConnections(id, inputMap, make(map[int]bool))
-	return len(r)
+	return len(getConnections(id, inputMap, make(map[int]bool))), len(getAllGroups(inputMap))
 }
